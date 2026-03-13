@@ -45,17 +45,16 @@ export const getSellerOrders = async (req, res) => {
   try {
     const sellerId = req.userId; 
 
-    const orders = await OrderModel.find() 
+    const orders = await OrderModel.find({})
       .populate({
-        path: 'items.product',
-        match: { seller: sellerId } 
+        path: 'items.productId',
+        match: { seller: sellerObjectId } 
       })
       .populate('address')
       .sort({ createdAt: -1 });
 
-    // Only send orders that contain this seller's products
     const sellerOrders = orders.filter(order =>
-      order.items.some(item => item.product !== null)
+      order.items?.some(item => item.productId)
     );
 
     res.json({ success: true, orders: sellerOrders });
